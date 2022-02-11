@@ -26,11 +26,6 @@
 /* Not for production use: */
 #define PERL_ENABLE_EXPERIMENTAL_REGEX_OPTIMISATIONS 0
 
-/* Activate offsets code - set to if 1 to enable */
-#ifdef DEBUGGING
-#define RE_TRACK_PATTERN_OFFSETS
-#endif
-
 /*
  * Structure for regexp "program".  This is essentially a linear encoding
  * of a nondeterministic finite-state machine (aka syntax charts or
@@ -66,15 +61,6 @@
    private to the engine itself. It now lives here. */
 
  typedef struct regexp_internal {
-        union {
-            U32 *offsets;           /* offset annotations 20001228 MJD
-                                       data about mapping the program to the
-                                       string -
-                                       offsets[0] is proglen when this is used
-                                       */
-            U32 proglen;
-        } u;
-
         regnode *regstclass;    /* Optional startclass as identified or constructed
                                    by the optimiser */
         struct reg_data *data;	/* Additional miscellaneous data used by the program.
@@ -82,6 +68,7 @@
                                    data that the regops need. Often the ARG field of
                                    a regop is an index into this structure */
         struct reg_code_blocks *code_blocks;/* positions of literal (?{}) */
+        U32 proglen;            /* size of the compiled program in regnodes */
         int name_list_idx;	/* Optional data index of an array of paren names */
         regnode program[1];	/* Unwarranted chumminess with compiler. */
 } regexp_internal;
